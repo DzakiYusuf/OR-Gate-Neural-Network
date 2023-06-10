@@ -37,18 +37,25 @@ def threshold_output():
     calculation = np.dot(test_data, weights[:3])
     output = activation_function(calculation)
     threshold_label.config(text=f"Threshold Output: {output}")
-
-    if output == y[current_iteration]:
+    input_values = [int(input0.get()), int(input1.get()), int(input2.get())]
+    if input_values == [1, 1, 1]:
+        sequence_error = 0  # Reset sequence error to 0
+        
+    if output == y[current_iteration] and input_values == [1, 1, 1]:
         finish_output_label.config(text="Output: TRUE")
         update_button.config(state=tk.DISABLED)
         next_iteration_button.config(state=tk.NORMAL)
         sequence_error = 0
+        sequence_error_label.config(text=f"Sequence Error: {sequence_error}")
     else:
         finish_output_label.config(text="Output: ERROR")
         next_iteration_button.config(state=tk.DISABLED)
         update_button.config(state=tk.NORMAL)
         sequence_error += 1
         sequence_error_label.config(text=f"Sequence Error: {sequence_error}")
+        
+    if sequence_error == 0 and output == y[current_iteration]:
+        sequence_error_label.config(text=f"Sequence Error: FINISH")
 
 
 def update_weights():
@@ -86,15 +93,19 @@ def update_weights():
     next_iteration_button.config(state=tk.NORMAL)
 
 def next_iteration():
-    global current_iteration
+    global current_iteration, sequence_error
     input1.delete(0, tk.END)
     input2.delete(0, tk.END)
+    input_values = [int(input0.get()), int(input1.get()), int(input2.get())]
+    if input_values == [1, 1, 1]:
+        sequence_error = 0  # Reset sequence error to 0
+        sequence_error_label.config(text=f"Sequence Error: {sequence_error}")
     current_iteration = (current_iteration + 1) % len(X)
     input1.insert(0, X[current_iteration, 0])
     input2.insert(0, X[current_iteration, 1])
     next_iteration_button.config(state=tk.DISABLED)
     update_button.config(state=tk.DISABLED)
-
+ 
 def finish():
     input_values = [int(input0.get()), int(input1.get()), int(input2.get())]
     test_data = np.array(input_values)
@@ -166,7 +177,7 @@ finish_output_label = tk.Label(window, text="Output: ")
 finish_output_label.grid(row=9, column=1)
 
 sequence_error = 0
-sequence_error_label = tk.Label(window, text="Sequence Error: 0")
+sequence_error_label = tk.Label(window, text="Sequence Error: ")
 sequence_error_label.grid(row=10, column=1)
 
 current_iteration = 0
