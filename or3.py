@@ -94,18 +94,35 @@ def update_weights():
 
 def next_iteration():
     global current_iteration, sequence_error
+    input1_value = input1.get()
+    input2_value = input2.get()
+
+    # Input validation
+    if not input1_value or not input2_value:
+        # Handle empty input fields
+        messagebox.showerror("Error", "Please enter values in all input fields.")
+        return
+
+    try:
+        input1_int = int(input1_value)
+        input2_int = int(input2_value)
+    except ValueError:
+        # Handle non-numeric input
+        messagebox.showerror("Error", "Invalid input. Please enter integers.")
+        return
+
+    # Reset sequence error if input is [1, 1, 1]
+    if input1_int == 1 and input2_int == 1:
+        sequence_error = 0
+
     input1.delete(0, tk.END)
     input2.delete(0, tk.END)
-    input_values = [int(input0.get()), int(input1.get()), int(input2.get())]
-    if input_values == [1, 1, 1]:
-        sequence_error = 0  # Reset sequence error to 0
-        sequence_error_label.config(text=f"Sequence Error: {sequence_error}")
     current_iteration = (current_iteration + 1) % len(X)
     input1.insert(0, X[current_iteration, 0])
     input2.insert(0, X[current_iteration, 1])
     next_iteration_button.config(state=tk.DISABLED)
     update_button.config(state=tk.DISABLED)
- 
+    
 def finish():
     input_values = [int(input0.get()), int(input1.get()), int(input2.get())]
     test_data = np.array(input_values)
