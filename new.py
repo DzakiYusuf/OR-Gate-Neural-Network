@@ -63,8 +63,9 @@ def calculate_output():
     input_values = [int(input0.get()), int(input1.get()), int(input2.get())]
     test_data = np.array(input_values)
     calculation = np.dot(test_data, weights[:3])
-    calculation_label.config(text=f"Calculation: {calculation}")
-    print(f"Calculation: {calculation}")
+    rounded_calculation = round(calculation, 3)
+    calculation_label.config(text=f"Calculation: {rounded_calculation}")
+    print(f"Calculation: {rounded_calculation}")
 
 def threshold_output():
     global current_iteration, sequence_error, error
@@ -215,7 +216,7 @@ def perform_iteration():
     global iteration_counter
     calculate_button_pressed()
     window.update()
-    time.sleep(0.1)
+  
     if threshold_button['state'] == tk.NORMAL:
         threshold_output()
         
@@ -225,14 +226,13 @@ def perform_iteration():
     if update_button['state'] == tk.NORMAL:
         update_weights()
         window.update()
-        time.sleep(0.1)
+        
     if next_iteration_button['state'] == tk.NORMAL:
         next_iteration()
         time.sleep(0.1)
     if threshold_button['state'] == tk.DISABLED:
         calculate_button_pressed()
-        
-    time.sleep(0.1)
+  
     print("Performing iteration")
    
     window.update()
@@ -241,14 +241,16 @@ def iterate_button_pressed(num_iterations):
     # Disable the iterate button
     iterate_button.config(state=tk.DISABLED)
     # Perform the desired actions for the specified number of iterations
+    
     for i in range(num_iterations):
-     perform_iteration()
-     perform_iteration()
-     perform_iteration()
-     perform_iteration()
-     window.update()
-     time.sleep(0.2)  # Add a delay for better visualization
-     
+      if finish_output_label.cget('text') == "FINISH":
+        break
+      perform_iteration()
+      perform_iteration()
+      perform_iteration()
+      perform_iteration()
+      window.update()
+      time.sleep(0.2)  # Add a delay for better visualization
         
 # Create the main window
 window = tk.Tk()
