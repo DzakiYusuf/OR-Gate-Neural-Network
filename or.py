@@ -191,17 +191,7 @@ def finish():
     calculation = np.dot(test_data, weights[:3])
     output = activation_function(calculation)
     threshold_label.config(text=f"Threshold Output: {output}")
-    
 
-    # input_values = [int(input0.get()), int(input1.get()), int(input2.get())]
-    # test_data = np.array(input_values)
-    # calculation = np.dot(test_data, weights[:3])
-    # output = activation_function(calculation)
-    
-    # if output == y[current_iteration]:
-    #     finish_output_label.config(text="Output: TRUE")
-    # else:
-    #     finish_output_label.config(text="Output: ERROR")
         
 def calculate_button_pressed():
     calculate_output()
