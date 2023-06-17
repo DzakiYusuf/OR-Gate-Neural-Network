@@ -25,7 +25,8 @@ weights = np.array([0.506, 0.533, 0.58])
 def initialize_weights():
     global weights
     weights = np.round(np.random.uniform(low=-1, high=1, size=3), 3)
-    updated_weights_label.config(text=f"Updated Weights: {weights}")
+    rounded_weights = np.round(weights, 3)
+    updated_weights_label.config(text=f"Updated Weights: {rounded_weights}")
 
 def restart_iteration():
     global current_iteration, iteration_counter, total_error, sequence_error, learning_rate, calculation
@@ -44,8 +45,8 @@ def restart_iteration():
     window.update()
     next_iteration_button.config(state=tk.DISABLED)
     update_button.config(state=tk.DISABLED)
-    finish_button.config(state=tk.DISABLED)
-    finish_output_label.config(text="Output: ")
+    test_button.config(state=tk.DISABLED)
+    test_output_label.config(text="Output: ")
     sequence_error_label.config(text="Total Error: 0")
     iterate_button.config(state=tk.NORMAL)
     learning_rate_label.config(text="Learning Rate: 0.1")
@@ -80,27 +81,27 @@ def threshold_output():
     
     if output == y[current_iteration]:
         if sequence_error != 0 or [X[current_iteration, 0], X[current_iteration, 1]] != [1, 1]:
-            if finish_output_label.cget('text') != "FINISH":
-                finish_output_label.config(text="Output: TRUE")
+            if test_output_label.cget('text') != "FINISH":
+                test_output_label.config(text="Output: TRUE")
                 update_button.config(state=tk.DISABLED)
                 next_iteration_button.config(state=tk.NORMAL)
-                finish_button.config(state=tk.DISABLED)
+                test_button.config(state=tk.DISABLED)
               
             else:
-                finish_output_label.config(text="FINISH")
+                test_output_label.config(text="FINISH")
                 update_button.config(state=tk.DISABLED)
                 next_iteration_button.config(state=tk.NORMAL)
-                finish_button.config(state=tk.NORMAL)
+                test_button.config(state=tk.NORMAL)
                 iterate_button.config(state=tk.DISABLED)
         else:
-            finish_output_label.config(text="FINISH")
+            test_output_label.config(text="FINISH")
             update_button.config(state=tk.DISABLED)
             next_iteration_button.config(state=tk.NORMAL)
-            finish_button.config(state=tk.NORMAL)
+            test_button.config(state=tk.NORMAL)
             iterate_button.config(state=tk.DISABLED)
             calculation_button.config(state=tk.DISABLED)
     else:
-        finish_output_label.config(text="Error! Press update weight")
+        test_output_label.config(text="Error! Press update weight")
         next_iteration_button.config(state=tk.DISABLED)
         update_button.config(state=tk.NORMAL)
         sequence_error += 1
@@ -143,7 +144,9 @@ def update_weights():
         weights[1] = weights[1] + (learning_rate * (y[3] - output) * 1)
         weights[2] = weights[2] + (learning_rate * (y[3] - output) * 1)
 
-    updated_weights_label.config(text=f"Updated Weights: {weights}")
+    rounded_weights = np.round(weights, 3)
+    updated_weights_label.config(text=f"Updated Weights: {rounded_weights}")
+
     
     total_error += error
 
@@ -152,7 +155,7 @@ def update_weights():
 
     if iteration_counter == len(X):
         if total_error == 0:
-            finish_output_label.config(text="Finish")
+            test_output_label.config(text="Finish")
             
         total_error = 0
         next_iteration_button.config(state=tk.NORMAL)
@@ -190,7 +193,7 @@ def next_iteration():
             sequence_error = 0
             sequence_error_label.config(text="Total Error: 0")
       
-def finish():
+def test():
     input_values = [int(input0.get()), int(input1.get()), int(input2.get())]
     test_data = np.array(input_values)
     calculation = np.dot(test_data, weights[:3])
@@ -238,7 +241,7 @@ def iterate_button_pressed(num_iterations):
     
     for i in range(num_iterations):
     # while iteration_counter != num_iterations:
-      if finish_output_label.cget('text') == "FINISH":
+      if test_output_label.cget('text') == "FINISH":
         break
       perform_iteration()
       perform_iteration()
@@ -261,7 +264,7 @@ input0.insert(0, 1)
 
 input1_label = tk.Label(window, text="X1:")
 input1_label.grid(row=1, column=0)
-input1 = tk.Entry(window)
+input1 = tk.Entry(window, state='normal')
 input1.grid(row=1, column=1)
 input1.insert(0, X[0, 0])
 
@@ -300,12 +303,12 @@ next_iteration_button = tk.Button(window, text="Next Input", command=next_iterat
 next_iteration_button.grid(row=7, column=0, pady=5)
 next_iteration_button.config(state=tk.DISABLED)
 
-finish_button = tk.Button(window, text="Test", command=finish)
-finish_button.grid(row=1, column=2, pady=5)
-finish_button.config(state=tk.DISABLED)
+test_button = tk.Button(window, text="Test", command=test)
+test_button.grid(row=1, column=2, pady=5)
+test_button.config(state=tk.DISABLED)
 
-finish_output_label = tk.Label(window, text="Output: ")
-finish_output_label.grid(row=5, column=0)
+test_output_label = tk.Label(window, text="Output: ")
+test_output_label.grid(row=5, column=0)
 
 sequence_error = 0
 sequence_error_label = tk.Label(window, text="Total Error: 0")
