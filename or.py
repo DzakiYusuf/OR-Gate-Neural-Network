@@ -24,20 +24,21 @@ weights = np.array([0.506, 0.533, 0.58])
 
 def initialize_weights():
     global weights
-    weights = np.array([0.506, 0.533, 0.58])
-    weights = np.round(np.random.rand(3), 3)
+    weights = np.round(np.random.uniform(low=-1, high=1, size=3), 3)
     updated_weights_label.config(text=f"Updated Weights: {weights}")
 
 def restart_iteration():
-    global current_iteration, iteration_counter, total_error, sequence_error
-    iteration_counter = 0
+    global current_iteration, iteration_counter, total_error, sequence_error, learning_rate, calculation
+    iteration_counter = 1
     total_error = 0
     sequence_error = 0
     initialize_weights()
     input1.delete(0, tk.END)
-    input1.insert(0, X[current_iteration, 0])
+    input1.insert(0, '0')
     input2.delete(0, tk.END)
-    input2.insert(0, X[current_iteration, 1])
+    input2.insert(0, '0')
+    calculate_button_pressed()
+    threshold_button_pressed()
     window.update()
     iteration_counter_label.config(text=f"Epoch: {iteration_counter}")
     window.update()
@@ -47,8 +48,10 @@ def restart_iteration():
     finish_output_label.config(text="Output: ")
     sequence_error_label.config(text="Total Error: 0")
     iterate_button.config(state=tk.NORMAL)
-    learning_rate_entry.config(text="Learning Rate: 0.1")
-    
+    learning_rate_label.config(text="Learning Rate: 0.1")
+    learning_rate = 0.1
+    calculation_button.config(state=tk.NORMAL)
+    window.update()
 
 # Set the learning rate
 learning_rate = 0.1
@@ -66,30 +69,36 @@ def calculate_output():
     calculation = np.dot(test_data, weights[:3])
     rounded_calculation = round(calculation, 3)
     calculation_label.config(text=f"Calculation: {rounded_calculation}")
+    
 def threshold_output():
     global current_iteration, sequence_error, error
     input_values = [int(input0.get()), int(input1.get()), int(input2.get())]
     test_data = np.array(input_values)
-    calculation = np.dot(test_data, weights[:3])
+    calculation = np.dot(test_data, weights)
     output = activation_function(calculation)
     threshold_label.config(text=f"Threshold Output: {output}")
     
-
-   
-    if output == y[current_iteration] or finish_output_label.cget('text') == "FINISH":
-        if sequence_error != 0:
-            finish_output_label.config(text="Output: TRUE")
-            update_button.config(state=tk.DISABLED)
-            next_iteration_button.config(state=tk.NORMAL)
-            finish_button.config(state=tk.NORMAL)
-            iterate_button.config(state=tk.DISABLED)
+    if output == y[current_iteration]:
+        if sequence_error != 0 or [X[current_iteration, 0], X[current_iteration, 1]] != [1, 1]:
+            if finish_output_label.cget('text') != "FINISH":
+                finish_output_label.config(text="Output: TRUE")
+                update_button.config(state=tk.DISABLED)
+                next_iteration_button.config(state=tk.NORMAL)
+                finish_button.config(state=tk.DISABLED)
+              
+            else:
+                finish_output_label.config(text="FINISH")
+                update_button.config(state=tk.DISABLED)
+                next_iteration_button.config(state=tk.NORMAL)
+                finish_button.config(state=tk.NORMAL)
+                iterate_button.config(state=tk.DISABLED)
         else:
             finish_output_label.config(text="FINISH")
             update_button.config(state=tk.DISABLED)
             next_iteration_button.config(state=tk.NORMAL)
             finish_button.config(state=tk.NORMAL)
             iterate_button.config(state=tk.DISABLED)
-            
+            calculation_button.config(state=tk.DISABLED)
     else:
         finish_output_label.config(text="Error! Press update weight")
         next_iteration_button.config(state=tk.DISABLED)
@@ -98,8 +107,9 @@ def threshold_output():
         sequence_error_label.config(text=f"Total Error: {sequence_error}")
         
         iterate_button.config(state=tk.NORMAL)
-    threshold_button.config(state=tk.DISABLED) 
-        
+    
+    threshold_button.config(state=tk.DISABLED)
+
 def threshold_button_pressed():
     threshold_output()
     
@@ -141,7 +151,6 @@ def update_weights():
         sequence_error = 0
 
     if iteration_counter == len(X):
-        finish_button.config(state=tk.NORMAL)
         if total_error == 0:
             finish_output_label.config(text="Finish")
             
@@ -162,6 +171,7 @@ def next_iteration():
     input2.insert(0, X[current_iteration, 1])
     next_iteration_button.config(state=tk.DISABLED)
     update_button.config(state=tk.DISABLED)
+    calculation_button.config(state=tk.NORMAL)
 
     if [X[current_iteration, 0], X[current_iteration, 1]] == [0, 0]:
         
@@ -191,6 +201,8 @@ def finish():
     calculation = np.dot(test_data, weights[:3])
     output = activation_function(calculation)
     threshold_label.config(text=f"Threshold Output: {output}")
+    next_iteration_button.config(state=tk.NORMAL)
+    
 
         
 def calculate_button_pressed():
@@ -200,11 +212,7 @@ def calculate_button_pressed():
 # Define the iteration counter
 iteration_counter = 1
 
-# Define the maximum number of iterations
-max_iterations = 10
-
 def perform_iteration():
-    
     global iteration_counter
     calculate_button_pressed()
     window.update()
@@ -225,11 +233,11 @@ def perform_iteration():
     window.update()
 
 def iterate_button_pressed(num_iterations):
-    # Disable the iterate button
-    iterate_button.config(state=tk.DISABLED)
+
     # Perform the desired actions for the specified number of iterations
     
     for i in range(num_iterations):
+    # while iteration_counter != num_iterations:
       if finish_output_label.cget('text') == "FINISH":
         break
       perform_iteration()
@@ -238,10 +246,11 @@ def iterate_button_pressed(num_iterations):
       perform_iteration()
       window.update()
       time.sleep(0.2)  # Add a delay for better visualization
-        
+    iterate_button.config(state=tk.NORMAL)
 # Create the main window
 window = tk.Tk()
 window.title("OR Gate Neural Network Iteration")
+
 
 # Create input labels and entry fields
 input0_label = tk.Label(window, text="X0:")
@@ -270,6 +279,7 @@ calculation_label.grid(row=3, column=1)
 
 threshold_button = tk.Button(window, text="Threshold", command=threshold_output)
 threshold_button.grid(row=4, column=0, pady=5)
+threshold_button.config(state=tk.DISABLED)
 
 threshold_label = tk.Label(window, text="Threshold Output: ")
 threshold_label.grid(row=4, column=1)
@@ -317,7 +327,7 @@ current_iteration = 0
 total_error = 0
 
 # Create a label and entry field for the number of iterations
-iterations_label = tk.Label(window, text="Auto iteration until epoch:")
+iterations_label = tk.Label(window, text="Auto iteration:")
 iterations_label.grid(row=9, column=1, padx=10, pady=5)
 
 iterations_entry = tk.Entry(window, width=5)
