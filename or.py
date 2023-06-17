@@ -308,7 +308,7 @@ test_button.grid(row=1, column=2, pady=5)
 test_button.config(state=tk.DISABLED)
 
 test_output_label = tk.Label(window, text="Output: ")
-test_output_label.grid(row=5, column=0)
+test_output_label.grid(row=5, column=1)
 
 sequence_error = 0
 sequence_error_label = tk.Label(window, text="Total Error: 0")
