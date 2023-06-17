@@ -20,7 +20,7 @@ def activation_function(x):
     return np.where(x >= 0, 1, 0)
 
 # Initialize the weights
-weights = np.array([0.506, 0.533, 0.58])
+weights = np.array([0.206, -0.133, 0.58])
 
 def initialize_weights():
     global weights
@@ -291,7 +291,7 @@ update_button = tk.Button(window, text="Update Weights", command=update_weights)
 update_button.grid(row=6, column=0, pady=5)
 update_button.config(state=tk.DISABLED)
 
-updated_weights_label = tk.Label(window, text="Weights: [0.506, 0.533, 0.58]\n")
+updated_weights_label = tk.Label(window, text="Weights: [0.206, -0.133, 0.58]\n")
 updated_weights_label.grid(row=6, column=1, sticky="w")
 
 
