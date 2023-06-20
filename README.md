@@ -1,10 +1,14 @@
+
 # OR-Gate-Neural-Network
 Python OR Gate Neural Network
 
-#git clone https://github.com/DzakiYusuf/OR-Gate-Neural-Network.git
-#pip install numpy in your command prompt
-#on terminal write python or.py
+    git clone https://github.com/DzakiYusuf/OR-Gate-Neural-Network.git
 
-or 
+    pip install numpy in your command prompt
 
-#open or.exe 
+    on terminal write python or.py
+
+        OR 
+
+    open or.exe 
+
